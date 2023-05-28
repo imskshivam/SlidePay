@@ -1,60 +1,197 @@
-const jwt = require('jsonwebtoken');
+
+const otpService = require('../services/otp-service');
+const hashService = require('../services/hash-service');
+const tokenService = require('../services/token-service');
+const User = require('../models/user');
 
 
-
-const secretKey = 'your_secret_key';
-
-// Mock user database
-const users = [
-  { id: 1, phoneNumber: '+1234567890', otp: null },
-  // Add more users as needed
-];
-
-async function sendOTP(phoneNumber) {
-  // Implement your OTP sending mechanism here
-  // For example, you can use an SMS gateway API
-
-  // Mock implementation using a public API
-  const response = await fetch(
-    `https://api.example.com/send-otp?phone=${phoneNumber}`
-  );
-  const data = await response.json();
-  return data.otp;
-}
-
-function generateToken(user) { 
-  const payload = { id: user.id };
-  return jwt.sign(payload, secretKey);
-}
 
 async function login(req, res) {
+
   const { phoneNumber } = req.body;
-  const user = users.find((u) => u.phoneNumber === phoneNumber);
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+  if (!phoneNumber) {
+    res.status(400).json({message: 'Phone field is required!'});
   }
 
-  const otp = await sendOTP(phoneNumber);
-  user.otp = otp;
+    const otp =await otpService.generateOtp();
 
-  return res.status(200).json({ message: 'OTP sent successfully' });
+    const ttl =1000 * 60 * 5; //10-min
+    const expires = Date.now() + ttl;
+    const data = `${phoneNumber}.${otp}.${expires}`;
+    const hash = hashService.hashOtp(data);
+
+    try {
+       
+        return res.json({
+            hash:`${hash}.${expires}`,
+            otp:otp
+
+        });
+        
+    } catch (error) {
+        
+    }
+   
+    
+    
+
+
+  
 }
+// verifyOyyp .......
 
-function verify(req, res) {
-  const { phoneNumber, otp } = req.body;
-  const user = users.find(
-    (u) => u.phoneNumber === phoneNumber && u.otp === otp
-  );
 
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid OTP' });
+async function verifyOtp(req,res) {
+
+    const {otp , hash , phone} = req.body;
+    if (!otp || !hash ||!phone) {
+       return res.status(400).json({message:'All fields are required!'});
+    }
+
+    const [hashedOtp , expires] = hash.split('.');
+
+    if(Date.now() > +expires){
+      return  res.status(400).json({message:'OTP expired!'});
+    }
+
+    const data = `${phone}.${otp}.${expires}`;
+
+   const isValid =await otpService.verifyOtp(hashedOtp,data);
+   console.log(isValid);
+
+
+   const user  = new User();
+   user.mobile = phone;
+   user.status=true;
+
+//    let user;
+   
+
+//   try {
+//     user =  await userService.finduser({mobile:phone});
+//     if (!user) {
+//        user =  await userService.createUser({mobile:phone});
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({message:"Db error"});
+//   }
+
+  //Token genrate here .. . . 
+
+   const {accessToken,refreshToken} = tokenService.generateTokens({id:"2451515151151",activate:false});
+
+
+  await tokenService.storeRefreshToken(refreshToken,"2451515151151");
+
+
+   res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
+  });
+
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
+  });
+
+      user.accessToken = accessToken;
+      const savedUser = await user.save();
+
+
+   
+
+  if (isValid==false) {
+      return res.status(400).json({message:'Invalid OTP'});
+     }else {
+       
+     return res.status(200).json({message:refreshToken});
+     }
+
+ 
+   }
+
+
+
+   async function refresh(req,res) {
+    //get refresh token from cookie
+
+    const {refreshToken: refreshTokenFromCookies } = req.cookies;
+
+    //check if token is valid
+     let userData;
+
+
+    try {
+      userData =  await tokenService.verifyRefreshToken(refreshTokenFromCookies);
+    } catch (error) {
+        return res.status(401).json({message:'Invalid Token'});
+    }
+
+    //check if token is in db
+
+    //Genrate new tokens
+
+   const {refreshToken, accessToken} = tokenService.generateTokens({id:"2451515151151"});
+
+   //update refresh token
+
+   //put in cookie
+
+   res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
+  });
+
+
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
+  });
+
   }
 
-  user.otp = null;
-  const token = generateToken(user);
+  async function tokenIsValid (req,res) {
+    try {
+      console.log("shvbnsfhjnesjhnsejhnv");
+      const token = req.header('x-auth-token');
+      
+      if (!token) {
+        return res.json(false);
+      }
 
-  return res.status(200).json({ token });
-}
+     const verified =  tokenService.verifyAccessToken(token);
+     if (!verified) {
+      return res.json(false);
+     }
 
-module.exports = { login, verify };
+     const user = await User.findOne({accessToken:token});
+
+     if (!user) {
+      return res.json(false);
+     }
+
+     return res.json(true);
+    } catch (error) {
+      
+    }
+    
+  }
+
+
+   
+
+
+ 
+
+module.exports = { login,verifyOtp,refresh,tokenIsValid};
+  
