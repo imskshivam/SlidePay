@@ -65,17 +65,18 @@ async function verifyOtp(req,res) {
    }else {
 
     const getUser = await User.findOne({mobile:phone});
-    if (getUser!=null &&  getUser.active==true) {
-      return res.status(200).json({msg:true});
+    if (getUser!=null) {
+      return res.status(200).json({msg:getUser});
     }
 
     const user  = new User();
     user.mobile = phone;
     user.status=true;
+    user.active=false;
 
     //Token genrate here .. . . 
 
-   const {accessToken,refreshToken} = tokenService.generateTokens({id:"2451515151151",activate:false});
+   const {accessToken,refreshToken} = tokenService.generateTokens({id:phone,activate:false});
 
 
   //  await tokenService.storeRefreshToken(refreshToken,"2451515151151");
@@ -97,11 +98,11 @@ async function verifyOtp(req,res) {
   //  });
  
        user.accessToken = accessToken;
-        await user.save();
+      const savedUser=  await user.save();
 
     
      
-   return res.status(200).json({msg:false});
+   return res.status(200).json({msg:savedUser});
    }
 
 

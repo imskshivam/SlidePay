@@ -13,7 +13,7 @@ class UserService {
 //Create new User
     async createUser(req,res){
         try {
-           const {name,age,sex,email,mobile,address,pancard,wallet,payId} = req.body;
+           const {name,age,sex,email,mobile,address,pancard,wallet,payId,cardName,cardNumber,cVV,expDate,landmark,pincode,DOB} = req.body;
           
 
          
@@ -23,10 +23,18 @@ class UserService {
             getUser.age=age;
             getUser.sex=sex;
             getUser.email=email;
-            getUser.address=address;
+            getUser.addressDetail.address=address;
+            getUser.addressDetail.landMark=landmark;
+            getUser.addressDetail.pincode=pincode;
             getUser.pancard=pancard;
             getUser.payId=payId;
             getUser.active = true;
+            getUser.cardDetail.cardName=cardName;
+            getUser.cardDetail.cardName=cardNumber;
+            getUser.cardDetail.cVV=cVV;
+            getUser.cardDetail.expDate=expDate;
+            getUser.payId = mobile+"@slidepay";
+            getUser.DOB=DOB;
            
 
           const savedUser = await getUser.save();

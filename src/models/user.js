@@ -27,6 +27,8 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+ addressDetail: {
+    
   address: {
     type: String,
    
@@ -39,6 +41,8 @@ const userSchema = new Schema({
     type:String,
    
   },
+  
+ },
  
   pancard: {
     type: String,
@@ -54,6 +58,7 @@ const userSchema = new Schema({
   },
   accessToken:{
     type:String,
+    required :true
   },
   active:{
     type:Boolean,
@@ -64,6 +69,22 @@ const userSchema = new Schema({
     enum: ['UserAccount', 'MerchantAccount'],
     default: 'UserAccount'
   },
+  cardDetail:{
+
+    cardName :{
+      type:String,
+      
+    },
+    cardNumber :{
+      type:String,
+    },
+    cVV :{
+      type:String,
+    },
+    expDate :{
+      type:String,
+    }
+  }
   
  
   
