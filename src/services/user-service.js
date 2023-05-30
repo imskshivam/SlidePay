@@ -13,7 +13,10 @@ class UserService {
 //Create new User
     async createUser(req,res){
         try {
-           const {name,age,sex,email,mobile,address,pancard,wallet,payId,cardName,cardNumber,cVV,expDate,landmark,pincode,DOB} = req.body;
+           const {name,age,sex,email,mobile,pancard,wallet,payId,cardDetail, addressDetail,DOB} = req.body;
+
+//            const { address, landMark, Pincode } = addressDetail;
+// const { cardName, cardNumber, cVV, expDate } = cardDetail;
           
 
          
@@ -23,16 +26,13 @@ class UserService {
             getUser.age=age;
             getUser.sex=sex;
             getUser.email=email;
-            getUser.addressDetail.address=address;
-            getUser.addressDetail.landMark=landmark;
-            getUser.addressDetail.pincode=pincode;
+            getUser.addressDetail=addressDetail;
+            
             getUser.pancard=pancard;
             getUser.payId=payId;
             getUser.active = true;
-            getUser.cardDetail.cardName=cardName;
-            getUser.cardDetail.cardName=cardNumber;
-            getUser.cardDetail.cVV=cVV;
-            getUser.cardDetail.expDate=expDate;
+            getUser.cardDetail=cardDetail;
+            
             getUser.payId = mobile+"@slidepay";
             getUser.DOB=DOB;
            
@@ -40,7 +40,7 @@ class UserService {
           const savedUser = await getUser.save();
             
 
-            res.status(200).json(savedUser);
+            res.status(200).json(getUser);
           } catch (error) {
             res.status(400).json({ error: error.message });
           }
