@@ -57,12 +57,58 @@ async function verifyOtp(req,res) {
     const data = `${phone}.${otp}.${expires}`;
 
    const isValid =await otpService.verifyOtp(hashedOtp,data);
-   console.log(isValid);
+   
+
+   
+  if (isValid==false) {
+    return res.status(400).json({message:'Invalid OTP'});
+   }else {
+
+    const getUser = await User.findOne({mobile:phone});
+    if (getUser!=null &&  getUser.active==true) {
+      return res.status(200).json({msg:true});
+    }
+
+    const user  = new User();
+    user.mobile = phone;
+    user.status=true;
+
+    //Token genrate here .. . . 
+
+   const {accessToken,refreshToken} = tokenService.generateTokens({id:"2451515151151",activate:false});
 
 
-   const user  = new User();
-   user.mobile = phone;
-   user.status=true;
+  //  await tokenService.storeRefreshToken(refreshToken,"2451515151151");
+ 
+ 
+  //   res.cookie('refreshToken', refreshToken, {
+  //    httpOnly: true,
+  //    secure: true,
+  //    sameSite: 'None',
+  //    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
+  //  });
+ 
+ 
+  //  res.cookie('accessToken', accessToken, {
+  //    httpOnly: true,
+  //    secure: true,
+  //    sameSite: 'None',
+  //    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
+  //  });
+ 
+       user.accessToken = accessToken;
+        await user.save();
+
+    
+     
+   return res.status(200).json({msg:false});
+   }
+
+
+
+
+  
+   
 
 //    let user;
    
@@ -77,41 +123,11 @@ async function verifyOtp(req,res) {
 //     res.status(500).json({message:"Db error"});
 //   }
 
-  //Token genrate here .. . . 
-
-   const {accessToken,refreshToken} = tokenService.generateTokens({id:"2451515151151",activate:false});
-
-
-  await tokenService.storeRefreshToken(refreshToken,"2451515151151");
-
-
-   res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
-  });
-
-
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    maxAge: 30 * 24 * 60 * 60 * 1000, // Set the expiration time for the cookie (30 days in this example)
-  });
-
-      user.accessToken = accessToken;
-      const savedUser = await user.save();
+  
 
 
    
 
-  if (isValid==false) {
-      return res.status(400).json({message:'Invalid OTP'});
-     }else {
-       
-     return res.status(200).json({message:refreshToken});
-     }
 
  
    }

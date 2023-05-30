@@ -24,10 +24,10 @@ const authRouter = require('./src/routes/auth');
 
 app.use(responseTime());
 app.use(cors({ origin:true, credentials:true }));
-app.use('/SlidePay/user',userRouter);
+app.use('/user',userRouter);
 // app.use('/SlidePay/borrow',borrowRouter);
-app.use('/SlidePay/auth',authRouter);
-app.use('/SlidePay/transactions',transactionsRouter);
+app.use('/auth',authRouter);
+app.use('/transactions',transactionsRouter);
 
 
 app.listen(PORT,"0.0.0.0", ()=>{

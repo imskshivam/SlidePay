@@ -21,7 +21,7 @@ userRouter.post('/createUser',userService.createUser);
 userRouter.get('/verifyPayid',userService.verifyPayId);
 
 // GET /all  user
-userRouter.get('/user',userService.getUser);
+userRouter.get('/getAllUser',userService.getUser);
 
 // GET /user/:id
 userRouter.get('/userId',userService.getUserById);

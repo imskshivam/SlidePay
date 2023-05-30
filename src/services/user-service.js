@@ -26,13 +26,13 @@ class UserService {
             getUser.address=address;
             getUser.pancard=pancard;
             getUser.payId=payId;
-            getUser.accessToken=TokenService.generateTokens({
-                name:name,}).accessToken;
+            getUser.active = true;
+           
 
           const savedUser = await getUser.save();
             
 
-            res.status(201).json(savedUser);
+            res.status(200).json(savedUser);
           } catch (error) {
             res.status(400).json({ error: error.message });
           }

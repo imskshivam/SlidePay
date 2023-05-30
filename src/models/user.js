@@ -13,6 +13,10 @@ const userSchema = new Schema({
     type: Number,
     
   },
+  DOB: {
+    type: String,
+    
+  },
   sex: {
     type: String,
   },
@@ -27,6 +31,15 @@ const userSchema = new Schema({
     type: String,
    
   },
+  landMark:{
+    type:String,
+   
+  },
+  Pincode:{
+    type:String,
+   
+  },
+ 
   pancard: {
     type: String,
     
@@ -44,13 +57,14 @@ const userSchema = new Schema({
   },
   active:{
     type:Boolean,
-    default:false
+   
   },
   accountType:{
     type:String,
     enum: ['UserAccount', 'MerchantAccount'],
     default: 'UserAccount'
-  }
+  },
+  
  
   
 });
