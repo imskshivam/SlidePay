@@ -179,19 +179,19 @@ async function verifyOtp(req,res) {
 
   async function tokenIsValid (req,res) {
     try {
-      console.log("shvbnsfhjnesjhnsejhnv");
+     
       const token = req.header('x-auth-token');
       
       if (!token) {
         return res.json(false);
       }
 
-     const verified =  tokenService.verifyAccessToken(token);
+     const verified = await tokenService.verifyAccessToken(token);
      if (!verified) {
       return res.json(false);
      }
 
-     const user = await User.findOne({accessToken:token});
+     const user = await User.findOne({mobile:verified.id});
 
      if (!user) {
       return res.json(false);

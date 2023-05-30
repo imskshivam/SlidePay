@@ -11,7 +11,7 @@ const userRouter = express.Router();
 
 
 // GET /user
-userRouter.get('/',auth ,userService.getUser);
+userRouter.get('/userById',auth ,userService.getUser);
 
 
 // POST /user

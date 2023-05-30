@@ -4,7 +4,7 @@
  class TokenService {
     generateTokens(payload) {
        const accessToken =  jwt.sign(payload,accessTokenSecret, {
-        expiresIn:'1h'
+        expiresIn:'1y'
        });
 
 
@@ -25,7 +25,11 @@
     }
 
     async verifyAccessToken(accessToken) {
-      return jwt.verify(accessToken,accessTokenSecret);
+      try {
+         return jwt.verify(accessToken,accessTokenSecret);
+      } catch (error) {
+         return false;
+      }
      }
 
 

@@ -50,8 +50,10 @@ class UserService {
      // GET /user
     async getUser(req,res){
         try {
-            const users = await User.find();
-            res.json(users)
+            console.log(req.user);
+            const user = await User.findOne({mobile:req.user});
+            res.json({user});
+            
            } catch (error) {
             res.status(500).json({ error: error.message });
            }
