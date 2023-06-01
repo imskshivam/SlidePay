@@ -11,14 +11,14 @@ const userRouter = express.Router();
 
 
 // GET /user
-userRouter.get('/userById',auth ,userService.getUser);
+userRouter.get('/userById',auth ,userService.getUserById);
 
 
 // POST /user
 userRouter.post('/createUser',userService.createUser);
 
 // POST /verify pay id
-userRouter.get('/verifyPayid',userService.verifyPayId);
+userRouter.get('/verifyPayid/:id',userService.verifyPayId);
 
 // GET /all  user
 userRouter.get('/getAllUser',userService.getUser);

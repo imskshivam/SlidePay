@@ -37,22 +37,35 @@ class UserService {
             getUser.DOB=DOB;
            
 
-          const savedUser = await getUser.save();
+          const user = await getUser.save();
             
 
-            res.status(200).json(getUser);
+            res.status(200).json({user});
           } catch (error) {
             res.status(400).json({ error: error.message });
           }
     
     }
 
-     // GET /user
+
     async getUser(req,res){
+        try {
+           
+            const user = await User.find();
+            res.json({user});
+            
+           } catch (error) {
+            res.status(500).json({ error: error.message });
+           }
+    
+    }
+
+     // GET /user
+    async getUserById(req,res){
         try {
             console.log(req.user);
             const user = await User.findOne({mobile:req.user});
-            res.json({user});
+            res.json({user:user});
             
            } catch (error) {
             res.status(500).json({ error: error.message });
@@ -65,18 +78,18 @@ class UserService {
      // GET /user
      async verifyPayId(req,res){
 
-        const { verifyPayid , iv} = req.query;
+        const id = req.params.id;
+        console.log(id);
 
        try {
-        const decryptverifyPayid = encrypt.decrypt({ iv: iv,
-         content: verifyPayid });
+       
  
-         const payId = await User.findOne({payId:decryptverifyPayid});
+         const payId = await User.findOne({payId:id});
  
          if (!payId) {
-             return res.status(200).json({message:"not valid"});
+             return res.status(400).json(false);
          }else {
-            return res.status(200).json({message:" valid"});
+            return res.status(200).json(true);
          }
      
        } catch (error) {
@@ -84,23 +97,23 @@ class UserService {
        }
     }
 
-    // GET /user/:id
-    async getUserById(req,res) {
+    // // GET /user/:id
+    // async getUserById(req,res) {
 
-        const {userId ,iv } = req.query;
+    //     const {userId ,iv } = req.query;
 
-        try {
+    //     try {
 
-            const decryptuserId = encrypt.decrypt({ iv: iv,
-                content: userId });
+    //         const decryptuserId = encrypt.decrypt({ iv: iv,
+    //             content: userId });
 
 
-         const user_Id = await User.findOne({name:decryptuserId});
-         res.json(user_Id);
-        } catch (error) {
-         res.status(500).json({ error: error.message });
-        }
-    }
+    //      const user_Id = await User.findOne({name:decryptuserId});
+    //      res.json(user_Id);
+    //     } catch (error) {
+    //      res.status(500).json({ error: error.message });
+    //     }
+    // }
 
     
 }

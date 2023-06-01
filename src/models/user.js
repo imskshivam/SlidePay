@@ -7,21 +7,26 @@ const userSchema = new Schema({
   
   name: {
     type: String,
+    default:''
     
   },
   age: {
-    type: Number,
+    type: String,
+    default:''
     
   },
   DOB: {
     type: String,
+    default:''
     
   },
   sex: {
     type: String,
+    default:''
   },
   email: {
-    type: String, 
+    type: String,
+    default:'' 
   },
   mobile: {
     type: String,
@@ -31,14 +36,17 @@ const userSchema = new Schema({
     
   address: {
     type: String,
+    default:''
    
   },
   landMark:{
     type:String,
+    default:''
    
   },
   Pincode:{
     type:String,
+    default:''
    
   },
 
@@ -46,6 +54,7 @@ const userSchema = new Schema({
  
   pancard: {
     type: String,
+    default:''
     
   },
   wallet: {
@@ -54,6 +63,7 @@ const userSchema = new Schema({
   },
   payId:{
     type:String,
+    default:''
    
   },
   accessToken:{
@@ -62,6 +72,7 @@ const userSchema = new Schema({
   },
   active:{
     type:Boolean,
+    default:false
    
   },
   accountType:{
@@ -73,16 +84,20 @@ const userSchema = new Schema({
 
     cardName :{
       type:String,
+      default:''
       
     },
     cardNumber :{
       type:String,
+      default:''
     },
     cVV :{
       type:String,
+      default:''
     },
     expDate :{
       type:String,
+      default:''
     }
   }
   

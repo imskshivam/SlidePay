@@ -66,13 +66,15 @@ async function verifyOtp(req,res) {
 
     const getUser = await User.findOne({mobile:phone});
     if (getUser!=null) {
-      return res.status(200).json({msg:getUser});
+      return res.status(200).json({user:getUser});
     }
 
     const user  = new User();
     user.mobile = phone;
     user.status=true;
     user.active=false;
+    
+    
 
     //Token genrate here .. . . 
 
@@ -102,7 +104,7 @@ async function verifyOtp(req,res) {
 
     
      
-   return res.status(200).json({msg:savedUser});
+   return res.status(200).json({user:savedUser});
    }
 
 

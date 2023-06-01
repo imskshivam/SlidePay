@@ -32,7 +32,7 @@ class  transactionService {
     // POST /transactions
     async postTransaction (req,res) {
 
-        const { senderId , recieverId , amount ,iv} = req.query;
+        const { senderId , recieverId , amount } = req.body;
 
      
 
@@ -41,16 +41,9 @@ class  transactionService {
 
       try {
 
-        const decryptsenderId = encrypt.decrypt({ iv: iv,
-          content: senderId });
-  
-        const  decryptrecieverId = encrypt.decrypt({ iv: iv,
-          content: recieverId });
-  
-            const  decryptamountId = encrypt.decrypt({ iv: iv,
-              content: amount });
-         const senderuser = await User.findOne({payId:decryptsenderId});
-            const recieveruser = await User.findOne({payId:decryptrecieverId});
+        
+         const senderuser = await User.findOne({payId:senderId});
+            const recieveruser = await User.findOne({payId:recieverId});
              if (!senderuser) {
                   // User not found
         return res.status(404).json({ message: 'Your Account Not Active' });
@@ -61,18 +54,18 @@ class  transactionService {
            }
   
   
-           senderuser.wallet=senderuser.wallet-parseInt(decryptamountId);
+           senderuser.wallet=senderuser.wallet-parseInt(amount);
   
-           recieveruser.wallet=parseInt(decryptamountId)+recieveruser.wallet;
+           recieveruser.wallet=parseInt(amount)+recieveruser.wallet;
           const updatesender = await senderuser.save();
           const updatereciever = await recieveruser.save();
 
 
                // Create a new transaction object
   const newTransaction = new Transaction({
-    amount:decryptamountId,
-    sender:decryptsenderId,
-    reciever:decryptrecieverId,
+    amount:amount,
+    sender:senderId,
+    reciever:recieverId,
     transactionId:`SLIDE${uuidv4().split('-').join('').toUpperCase()}`,
     status:"successfull",
     date:new Date()
