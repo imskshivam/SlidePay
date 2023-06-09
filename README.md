@@ -23,7 +23,7 @@ Database system (e.g., MySQL, PostgreSQL, MongoDB)
 To install and set up SlidePay Finance Server, follow these steps:
 
 1. Clone the repository from GitHub:
-git clone https://github.com/your-username/slidepay-finance-server.git
+git clone https://github.com/imskshivam/SlidePay.git
 
 
 2. Navigate to the project directory:
